@@ -1,0 +1,88 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `mydb` ;
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8 ;
+USE `mydb` ;
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Clients`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Clients` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Clients` (
+  `Номер_клієнта` INT NOT NULL,
+  `Імʼя_клієнта` VARCHAR(45) NULL,
+  `Адреса_клієнта` VARCHAR(45) NULL,
+  PRIMARY KEY (`Номер_клієнта`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Orders`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Orders` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Orders` (
+  `Номер_замовлення` INT NOT NULL,
+  `Номер_клієнта` INT NULL,
+  `Дата_замовлення` DATETIME NULL,
+  PRIMARY KEY (`Номер_замовлення`),
+  INDEX `orders-clients_idx` (`Номер_клієнта` ASC) VISIBLE,
+  CONSTRAINT `orders-clients`
+    FOREIGN KEY (`Номер_клієнта`)
+    REFERENCES `mydb`.`Clients` (`Номер_клієнта`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Products`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Products` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Products` (
+  `Номер_товару` INT NOT NULL,
+  `Назва_товару` VARCHAR(45) NULL,
+  PRIMARY KEY (`Номер_товару`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `mydb`.`Order_Details`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `mydb`.`Order_Details` ;
+
+CREATE TABLE IF NOT EXISTS `mydb`.`Order_Details` (
+  `Номер_замовлення` INT NOT NULL,
+  `Номер_товару` INT NOT NULL,
+  `Кількість` INT NULL,
+  PRIMARY KEY (`Номер_замовлення`, `Номер_товару`),
+  INDEX `order_details-products_idx` (`Номер_товару` ASC) VISIBLE,
+  CONSTRAINT `order_details-orders`
+    FOREIGN KEY (`Номер_замовлення`)
+    REFERENCES `mydb`.`Orders` (`Номер_замовлення`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `order_details-products`
+    FOREIGN KEY (`Номер_товару`)
+    REFERENCES `mydb`.`Products` (`Номер_товару`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
